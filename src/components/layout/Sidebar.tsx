@@ -19,6 +19,8 @@ import {
   Layers,
   Star,
   ChevronDown,
+  X,
+  Menu,
 } from 'lucide-react';
 import { AppMode, Conversation, Folder as FolderType, Workspace, UserProfile } from '../../types';
 
@@ -39,6 +41,8 @@ interface SidebarProps {
   onOpenAuth?: () => void;
   onDeleteConversation: (id: string) => void;
   userProfile?: UserProfile;
+  isMobileOpen?: boolean;
+  onCloseMobile?: () => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -58,6 +62,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onOpenAuth,
   onDeleteConversation,
   userProfile,
+  isMobileOpen = false,
+  onCloseMobile,
 }) => {
   const [searchQuery, setSearchQuery] = useState('');
   const [showWorkspaceMenu, setShowWorkspaceMenu] = useState(false);
@@ -71,19 +77,56 @@ export const Sidebar: React.FC<SidebarProps> = ({
   const pinned = filteredConversations.filter((c) => c.isPinned);
   const recent = filteredConversations.filter((c) => !c.isPinned);
 
+  const handleMobileClick = (action: () => void) => {
+    action();
+    if (onCloseMobile) onCloseMobile();
+  };
+
   return (
-    <motion.aside
-      animate={{ width: isCollapsed ? 76 : 280 }}
-      transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-      className="relative z-30 flex h-full flex-col border-r border-white/5 bg-[#080808]/70 backdrop-blur-2xl shrink-0 select-none overflow-hidden"
-    >
-      {/* Collapse Toggle Button */}
-      <button
-        onClick={onToggleCollapse}
-        className="absolute -right-3 top-6 z-40 flex h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-[#0c0c0c] text-slate-300 shadow-xl hover:text-white transition-transform hover:scale-110"
+    <>
+      {/* Mobile Drawer Backdrop Overlay */}
+      <AnimatePresence>
+        {isMobileOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={onCloseMobile}
+            className="fixed inset-0 z-40 bg-black/80 backdrop-blur-md md:hidden"
+          />
+        )}
+      </AnimatePresence>
+
+      <motion.aside
+        animate={{ width: isCollapsed ? 76 : 280 }}
+        transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className={`fixed inset-y-0 left-0 z-50 flex h-full flex-col border-r border-white/10 bg-[#080808]/95 backdrop-blur-2xl shrink-0 select-none overflow-hidden transition-transform duration-300 md:relative md:z-30 md:bg-[#080808]/70 ${
+          isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'
+        }`}
       >
-        {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
-      </button>
+        {/* Mobile Close Button (Top Right on Mobile) */}
+        <div className="flex md:hidden items-center justify-between p-3 border-b border-white/10 bg-[#0c0c0c]">
+          <div className="flex items-center gap-2">
+            <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] text-white shadow-md">
+              <img src="/logo.png" alt="MuniAI" className="h-full w-full object-cover rounded-[7px]" />
+            </div>
+            <span className="font-extrabold text-sm text-white">MuniAI</span>
+          </div>
+          <button
+            onClick={onCloseMobile}
+            className="p-1.5 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white"
+          >
+            <X className="h-5 w-5" />
+          </button>
+        </div>
+
+        {/* Collapse Toggle Button (Desktop Only) */}
+        <button
+          onClick={onToggleCollapse}
+          className="hidden md:flex absolute -right-3 top-6 z-40 h-7 w-7 items-center justify-center rounded-full border border-white/10 bg-[#0c0c0c] text-slate-300 shadow-xl hover:text-white transition-transform hover:scale-110"
+        >
+          {isCollapsed ? <ChevronRight className="h-4 w-4" /> : <ChevronLeft className="h-4 w-4" />}
+        </button>
 
       {/* Workspace Selector Bar */}
       <div className="p-3 border-b border-white/5">
@@ -143,7 +186,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* New Chat Action */}
       <div className="p-3">
         <button
-          onClick={() => onNewConversation('chat')}
+          onClick={() => handleMobileClick(() => onNewConversation('chat'))}
           className={`flex w-full items-center justify-center gap-2 rounded-2xl bg-gradient-to-r from-cyan-500 via-purple-600 to-indigo-500 p-[1px] shadow-lg shadow-cyan-500/20 transition-transform active:scale-95 hover:scale-[1.02]`}
         >
           <div className="flex h-full w-full items-center justify-center gap-2 rounded-[15px] bg-[#0c0c0c] px-4 py-2.5 text-xs font-bold text-slate-100">
@@ -156,7 +199,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
       {/* Mode Navigation Items */}
       <div className="px-3 py-2 space-y-1 border-b border-white/5">
         <button
-          onClick={() => onSelectMode('chat')}
+          onClick={() => handleMobileClick(() => onSelectMode('chat'))}
           className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-all ${
             activeMode === 'chat'
               ? 'bg-gradient-to-r from-cyan-500/10 to-transparent text-cyan-400 border border-cyan-500/20'
@@ -168,7 +211,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <button
-          onClick={() => onSelectMode('code')}
+          onClick={() => handleMobileClick(() => onSelectMode('code'))}
           className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-all ${
             activeMode === 'code'
               ? 'bg-gradient-to-r from-emerald-500/10 to-transparent text-emerald-400 border border-emerald-500/20'
@@ -180,7 +223,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <button
-          onClick={() => onSelectMode('image')}
+          onClick={() => handleMobileClick(() => onSelectMode('image'))}
           className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-all ${
             activeMode === 'image'
               ? 'bg-gradient-to-r from-purple-500/10 to-transparent text-purple-400 border border-purple-500/20'
@@ -192,7 +235,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </button>
 
         <button
-          onClick={() => onSelectMode('research')}
+          onClick={() => handleMobileClick(() => onSelectMode('research'))}
           className={`flex w-full items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-all ${
             activeMode === 'research'
               ? 'bg-gradient-to-r from-cyan-500/10 to-transparent text-cyan-400 border border-cyan-500/20'
@@ -236,7 +279,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     }`}
                   >
                     <button
-                      onClick={() => onSelectConversation(c.id)}
+                      onClick={() => handleMobileClick(() => onSelectConversation(c.id))}
                       className="flex-1 text-left truncate pr-2"
                     >
                       {c.title}
@@ -335,5 +378,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
         </div>
       </div>
     </motion.aside>
+    </>
   );
 };

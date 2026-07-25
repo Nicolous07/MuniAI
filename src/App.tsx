@@ -38,6 +38,7 @@ export default function App() {
   const [activeWorkspaceId, setActiveWorkspaceId] = useState('ws-main');
 
   const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
+  const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState(false);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -342,21 +343,42 @@ export default function App() {
         <Sidebar
           isCollapsed={isSidebarCollapsed}
           onToggleCollapse={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+          isMobileOpen={isMobileSidebarOpen}
+          onCloseMobile={() => setIsMobileSidebarOpen(false)}
           conversations={conversations}
           activeConversationId={activeConversationId}
           onSelectConversation={(id) => {
             setActiveConversationId(id);
             setActiveMode('chat');
+            setIsMobileSidebarOpen(false);
           }}
-          onNewConversation={handleNewConversation}
+          onNewConversation={(mode) => {
+            handleNewConversation(mode);
+            setIsMobileSidebarOpen(false);
+          }}
           activeMode={activeMode}
-          onSelectMode={setActiveMode}
+          onSelectMode={(mode) => {
+            setActiveMode(mode);
+            setIsMobileSidebarOpen(false);
+          }}
           workspaces={WORKSPACES}
           activeWorkspaceId={activeWorkspaceId}
-          onSelectWorkspace={setActiveWorkspaceId}
-          onOpenSettings={() => setIsSettingsOpen(true)}
-          onOpenProfile={() => setIsProfileOpen(true)}
-          onOpenAuth={() => setIsAuthOpen(true)}
+          onSelectWorkspace={(id) => {
+            setActiveWorkspaceId(id);
+            setIsMobileSidebarOpen(false);
+          }}
+          onOpenSettings={() => {
+            setIsSettingsOpen(true);
+            setIsMobileSidebarOpen(false);
+          }}
+          onOpenProfile={() => {
+            setIsProfileOpen(true);
+            setIsMobileSidebarOpen(false);
+          }}
+          onOpenAuth={() => {
+            setIsAuthOpen(true);
+            setIsMobileSidebarOpen(false);
+          }}
           onDeleteConversation={handleDeleteConversation}
           userProfile={userProfile}
         />
@@ -372,6 +394,7 @@ export default function App() {
             onOpenAuth={() => setIsAuthOpen(true)}
             activeMode={activeMode}
             onSelectMode={setActiveMode}
+            onToggleMobileSidebar={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
           />
 
           {/* Dynamic Active Studio View */}

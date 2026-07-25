@@ -113,25 +113,25 @@ export const PromptBox: React.FC<PromptBoxProps> = ({
   };
 
   return (
-    <div className="relative w-full max-w-4xl mx-auto px-4 pb-6">
+    <div className="relative w-full max-w-4xl mx-auto px-2 sm:px-4 pb-3 sm:pb-6">
       {/* Quick Mode Inspiration Pills Above Input */}
-      <div className="mb-2 flex items-center justify-between text-xs px-2">
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1">
+      <div className="mb-2 flex items-center justify-between text-xs px-1 sm:px-2">
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar py-1 w-full sm:w-auto">
           <button
             onClick={() => setEnableSearch(!enableSearch)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium border transition-all shrink-0 ${
               enableSearch
                 ? 'bg-cyan-500/20 text-cyan-300 border-cyan-500/50 glow-cyan'
                 : 'glass-pill text-slate-400 hover:text-white'
             }`}
           >
             <Globe className="h-3.5 w-3.5" />
-            <span>Web Search</span>
+            <span>Search</span>
           </button>
 
           <button
             onClick={() => setDeepThink(!deepThink)}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium border transition-all shrink-0 ${
               deepThink
                 ? 'bg-indigo-500/20 text-indigo-300 border-indigo-500/50 glow-primary'
                 : 'glass-pill text-slate-400 hover:text-white'
@@ -143,38 +143,38 @@ export const PromptBox: React.FC<PromptBoxProps> = ({
 
           <button
             onClick={() => onSelectMode('code')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium border transition-all shrink-0 ${
               activeMode === 'code'
                 ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/50'
                 : 'glass-pill text-slate-400 hover:text-white'
             }`}
           >
             <Code className="h-3.5 w-3.5" />
-            <span>Code Mode</span>
+            <span>Code</span>
           </button>
 
           <button
             onClick={() => onSelectMode('image')}
-            className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+            className={`flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full text-xs font-medium border transition-all shrink-0 ${
               activeMode === 'image'
                 ? 'bg-purple-500/20 text-purple-300 border-purple-500/50'
                 : 'glass-pill text-slate-400 hover:text-white'
             }`}
           >
             <ImageIcon className="h-3.5 w-3.5" />
-            <span>Generate Image</span>
+            <span>Image</span>
           </button>
         </div>
 
-        <span className="hidden sm:inline font-mono text-[10px] text-slate-500">
+        <span className="hidden sm:inline font-mono text-[10px] text-slate-500 shrink-0">
           Type <code className="text-indigo-400">/</code> for commands
         </span>
       </div>
 
       {/* Main Glass Prompt Box Container with Immersive UI Ambient Glowing Border */}
       <div className="relative group">
-        <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-purple-600 to-indigo-500 rounded-[34px] blur opacity-25 transition-opacity group-focus-within:opacity-50 pointer-events-none"></div>
-        <div className="relative rounded-[32px] bg-[#0c0c0c]/90 backdrop-blur-3xl border border-white/10 p-3 shadow-2xl shadow-black transition-all">
+        <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 via-purple-600 to-indigo-500 rounded-[26px] sm:rounded-[34px] blur opacity-25 transition-opacity group-focus-within:opacity-50 pointer-events-none"></div>
+        <div className="relative rounded-[24px] sm:rounded-[32px] bg-[#0c0c0c]/90 backdrop-blur-3xl border border-white/10 p-2.5 sm:p-3 shadow-2xl shadow-black transition-all">
           {/* Slash Menu Dropdown */}
           <AnimatePresence>
             {showSlashMenu && (

@@ -10,6 +10,7 @@ import {
   SlidersHorizontal,
   Check,
   ShieldCheck,
+  Menu,
 } from 'lucide-react';
 import { AIModel, AppMode } from '../../types';
 import { AI_MODELS } from '../../data/mockData';
@@ -23,6 +24,7 @@ interface NavbarProps {
   onOpenAuth?: () => void;
   activeMode: AppMode;
   onSelectMode: (mode: AppMode) => void;
+  onToggleMobileSidebar?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -34,6 +36,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onOpenAuth,
   activeMode,
   onSelectMode,
+  onToggleMobileSidebar,
 }) => {
   const [showModelDropdown, setShowModelDropdown] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
@@ -41,10 +44,21 @@ export const Navbar: React.FC<NavbarProps> = ({
   const selectedModel = AI_MODELS.find((m) => m.id === selectedModelId) || AI_MODELS[0];
 
   return (
-    <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-white/5 glass-panel bg-[#050505]/60 backdrop-blur-md px-4 md:px-6 shrink-0">
-      {/* Left Brand Identity */}
-      <div className="flex items-center gap-3">
-        <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20 overflow-hidden">
+    <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-white/5 glass-panel bg-[#050505]/80 backdrop-blur-md px-3 md:px-6 shrink-0">
+      {/* Left Brand Identity & Mobile Hamburger Menu */}
+      <div className="flex items-center gap-2 sm:gap-3">
+        {/* Mobile Menu Button */}
+        {onToggleMobileSidebar && (
+          <button
+            onClick={onToggleMobileSidebar}
+            className="flex md:hidden items-center justify-center p-2 rounded-xl bg-white/5 border border-white/10 text-slate-300 hover:text-white transition-colors"
+            title="Open Menu"
+          >
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+
+        <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20 overflow-hidden shrink-0">
           <img
             src="/logo.png"
             alt="MuniAI"
@@ -69,16 +83,17 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="relative">
         <button
           onClick={() => setShowModelDropdown(!showModelDropdown)}
-          className="flex items-center gap-2 rounded-2xl glass-pill px-3.5 py-1.5 text-xs font-semibold text-slate-100 hover:border-indigo-500/50 shadow-md transition-all"
+          className="flex items-center gap-1.5 sm:gap-2 rounded-2xl glass-pill px-2.5 sm:px-3.5 py-1.5 text-xs font-semibold text-slate-100 hover:border-indigo-500/50 shadow-md transition-all"
         >
-          <Zap className="h-3.5 w-3.5 text-amber-400" />
-          <span>{selectedModel.name}</span>
-          <ChevronDown className="h-3.5 w-3.5 text-slate-400" />
+          <Zap className="h-3.5 w-3.5 text-amber-400 shrink-0" />
+          <span className="hidden sm:inline">{selectedModel.name}</span>
+          <span className="inline sm:hidden font-bold">{selectedModel.name.replace('MuniAI ', '')}</span>
+          <ChevronDown className="h-3.5 w-3.5 text-slate-400 shrink-0" />
         </button>
 
         {/* Model Menu Dropdown */}
         {showModelDropdown && (
-          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-80 z-50 rounded-2xl glass-panel border border-indigo-500/30 p-2 shadow-2xl bg-[#080d19]/95 space-y-1">
+          <div className="absolute top-full left-1/2 -translate-x-1/2 mt-2 w-72 sm:w-80 z-50 rounded-2xl glass-panel border border-indigo-500/30 p-2 shadow-2xl bg-[#080d19]/95 space-y-1">
             <div className="px-3 py-1.5 text-[10px] font-mono uppercase text-slate-400 font-semibold border-b border-slate-800">
               Select MuniAI Model Engine
             </div>
@@ -112,7 +127,7 @@ export const Navbar: React.FC<NavbarProps> = ({
       </div>
 
       {/* Right Action Tools */}
-      <div className="flex items-center gap-2 md:gap-3">
+      <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3">
         {/* Search Palette Cmd+K Trigger */}
         <button
           onClick={onOpenCommandPalette}
@@ -157,16 +172,17 @@ export const Navbar: React.FC<NavbarProps> = ({
         {onOpenAuth && (
           <button
             onClick={onOpenAuth}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 text-xs font-bold text-cyan-300 hover:text-white hover:border-cyan-400 transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 rounded-xl bg-gradient-to-r from-cyan-500/10 to-purple-500/10 border border-cyan-500/30 text-xs font-bold text-cyan-300 hover:text-white hover:border-cyan-400 transition-all shadow-sm"
           >
-            <span>Log In / Sign Up</span>
+            <span className="hidden sm:inline">Log In / Sign Up</span>
+            <span className="inline sm:hidden">Log In</span>
           </button>
         )}
 
         {/* User Profile Avatar */}
         <button
           onClick={onOpenProfile}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/40 overflow-hidden shadow-md hover:scale-105 transition-transform"
+          className="flex h-8 w-8 items-center justify-center rounded-full border border-cyan-500/40 overflow-hidden shadow-md hover:scale-105 transition-transform shrink-0"
           title="Account Profile"
         >
           <img
