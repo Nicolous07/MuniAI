@@ -3,6 +3,7 @@ import path from "path";
 import dotenv from "dotenv";
 import { GoogleGenAI, ThinkingLevel } from "@google/genai";
 import { createServer as createViteServer } from "vite";
+import { MUNIAI_SYSTEM_PROMPT_V2 } from "./src/data/systemPrompt";
 
 dotenv.config();
 
@@ -82,9 +83,7 @@ app.post("/api/chat", async (req, res) => {
       if (systemInstruction) {
         config.systemInstruction = systemInstruction;
       } else {
-        config.systemInstruction = `You are MuniAI Omega Ultra, the world's most advanced, articulate, and intelligent AI assistant. 
-You provide structured, precise, high-level answers with pristine markdown formatting, elegant code blocks, clear math expressions where relevant, and rigorous logic.
-Always maintain a helpful, professional, and sophisticated tone.`;
+        config.systemInstruction = MUNIAI_SYSTEM_PROMPT_V2;
       }
 
       if (enableSearch) {

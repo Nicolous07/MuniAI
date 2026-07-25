@@ -1,4 +1,5 @@
 import { AIModel, Conversation, Folder, SlashCommand, Workspace, UserProfile, AppSettings } from '../types';
+import { MUNIAI_SYSTEM_PROMPT_V2 } from './systemPrompt';
 
 export const AI_MODELS: AIModel[] = [
   {
@@ -76,7 +77,7 @@ export const DEFAULT_SETTINGS: AppSettings = {
   enableSoundEffects: true,
   enableAutoReadAloud: false,
   defaultModel: 'gemini-3.6-flash',
-  systemPrompt: 'You are MuniAI Omega, the world elite AI assistant.',
+  systemPrompt: MUNIAI_SYSTEM_PROMPT_V2,
   temperature: 0.7,
   topP: 0.95,
   reasoningDepth: 'high',
