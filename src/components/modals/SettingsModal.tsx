@@ -12,6 +12,13 @@ import {
   Check,
   Volume2,
   Sparkles,
+  Zap,
+  Eye,
+  EyeOff,
+  CheckCircle2,
+  AlertCircle,
+  ExternalLink,
+  Loader2,
 } from 'lucide-react';
 import { AppSettings } from '../../types';
 
@@ -30,12 +37,37 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
 }) => {
   const [activeTab, setActiveTab] = useState<'appearance' | 'models' | 'system' | 'api' | 'shortcuts'>('appearance');
   const [formData, setFormData] = useState<AppSettings>(settings);
+  const [showGroqKey, setShowGroqKey] = useState(false);
+  const [verifyingKey, setVerifyingKey] = useState(false);
+  const [keyStatus, setKeyStatus] = useState<{ success?: boolean; message?: string } | null>(null);
 
   if (!isOpen) return null;
 
   const handleSave = () => {
     onUpdateSettings(formData);
     onClose();
+  };
+
+  const handleVerifyGroqKey = async () => {
+    setVerifyingKey(true);
+    setKeyStatus(null);
+    try {
+      const res = await fetch('/api/verify-groq', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ apiKey: formData.groqApiKey || '' }),
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setKeyStatus({ success: true, message: `Connected! Found ${data.count} Groq models available.` });
+      } else {
+        setKeyStatus({ success: false, message: data.error || 'Invalid Groq API key or network error.' });
+      }
+    } catch (err: any) {
+      setKeyStatus({ success: false, message: err?.message || 'Connection test failed.' });
+    } finally {
+      setVerifyingKey(false);
+    }
   };
 
   return (
@@ -176,14 +208,102 @@ export const SettingsModal: React.FC<SettingsModalProps> = ({
             )}
 
             {activeTab === 'api' && (
-              <div className="space-y-3 p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 text-xs">
-                <div className="flex items-center gap-2 text-indigo-300 font-bold font-mono">
-                  <ShieldCheck className="h-5 w-5 text-emerald-400" />
-                  Gemini API Managed Key Secrets
+              <div className="space-y-5">
+                {/* GroqCloud API Key Section */}
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-amber-950/30 via-orange-950/20 to-slate-900 border border-amber-500/30 text-xs space-y-3">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2 text-amber-300 font-bold font-mono text-sm">
+                      <Zap className="h-5 w-5 text-amber-400 animate-pulse" />
+                      GroqCloud API Key (Ultra-Fast LPU Engine)
+                    </div>
+                    <span className="px-2.5 py-0.5 rounded-full text-[10px] font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                      GROQ SUB-100MS
+                    </span>
+                  </div>
+
+                  <p className="text-slate-300 leading-relaxed">
+                    GroqCloud provides sub-100ms ultra-fast inference for <strong>Llama 3.3 70B</strong>, <strong>DeepSeek R1 Distill</strong>, <strong>Llama 3.1 8B Instant</strong>, and <strong>Mixtral 8x7B</strong>.
+                  </p>
+
+                  <div className="space-y-2 pt-1">
+                    <label className="block font-mono text-[11px] uppercase text-slate-400 font-semibold">
+                      Groq API Key (<code className="text-amber-300">gsk_...</code>)
+                    </label>
+                    <div className="relative flex items-center">
+                      <input
+                        type={showGroqKey ? 'text' : 'password'}
+                        placeholder="gsk_xxxxxxxxxxxxxxxxxxxxxxxx"
+                        value={formData.groqApiKey || ''}
+                        onChange={(e) => setFormData({ ...formData, groqApiKey: e.target.value })}
+                        className="w-full rounded-xl glass-input pl-3.5 pr-24 py-2.5 text-xs font-mono text-amber-100 bg-slate-900/90 border border-amber-500/30 focus:outline-none focus:border-amber-400"
+                      />
+                      <div className="absolute right-2 flex items-center gap-1">
+                        <button
+                          type="button"
+                          onClick={() => setShowGroqKey(!showGroqKey)}
+                          className="p-1.5 rounded-lg text-slate-400 hover:text-amber-300 transition-colors"
+                          title={showGroqKey ? 'Hide key' : 'Show key'}
+                        >
+                          {showGroqKey ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={handleVerifyGroqKey}
+                          disabled={verifyingKey}
+                          className="px-2.5 py-1 rounded-lg bg-amber-500/20 text-amber-300 border border-amber-500/40 hover:bg-amber-500/30 text-[11px] font-mono font-medium flex items-center gap-1 transition-colors disabled:opacity-50"
+                        >
+                          {verifyingKey ? (
+                            <Loader2 className="h-3 w-3 animate-spin" />
+                          ) : (
+                            <Zap className="h-3 w-3" />
+                          )}
+                          <span>Test</span>
+                        </button>
+                      </div>
+                    </div>
+
+                    {keyStatus && (
+                      <div
+                        className={`flex items-center gap-2 p-2.5 rounded-xl text-xs font-mono ${
+                          keyStatus.success
+                            ? 'bg-emerald-950/40 text-emerald-300 border border-emerald-500/30'
+                            : 'bg-rose-950/40 text-rose-300 border border-rose-500/30'
+                        }`}
+                      >
+                        {keyStatus.success ? (
+                          <CheckCircle2 className="h-4 w-4 text-emerald-400 shrink-0" />
+                        ) : (
+                          <AlertCircle className="h-4 w-4 text-rose-400 shrink-0" />
+                        )}
+                        <span>{keyStatus.message}</span>
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between text-[11px] text-slate-400 pt-1">
+                      <span>Don't have a Groq API Key? Get one for free:</span>
+                      <a
+                        href="https://console.groq.com/keys"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="text-amber-400 hover:underline flex items-center gap-1 font-mono"
+                      >
+                        <span>Groq Console</span>
+                        <ExternalLink className="h-3 w-3" />
+                      </a>
+                    </div>
+                  </div>
                 </div>
-                <p className="text-slate-300">
-                  Gemini API keys are handled securely via server environment variables (<code className="text-indigo-300 font-mono">process.env.GEMINI_API_KEY</code>). Key configuration is managed through your platform Secrets panel.
-                </p>
+
+                {/* Gemini API Managed Key Secrets */}
+                <div className="p-4 rounded-2xl bg-indigo-950/20 border border-indigo-500/20 text-xs space-y-2">
+                  <div className="flex items-center gap-2 text-indigo-300 font-bold font-mono">
+                    <ShieldCheck className="h-5 w-5 text-emerald-400" />
+                    Gemini API Managed Key Secrets
+                  </div>
+                  <p className="text-slate-300">
+                    Gemini API keys are handled securely via server environment variables (<code className="text-indigo-300 font-mono">process.env.GEMINI_API_KEY</code>). Key configuration is managed through your platform Secrets panel.
+                  </p>
+                </div>
               </div>
             )}
 

@@ -3,10 +3,10 @@ export type AppMode = 'chat' | 'image' | 'code' | 'research' | 'voice';
 export interface AIModel {
   id: string;
   name: string;
-  provider: 'MuniAI' | 'Google' | 'DeepMind';
+  provider: 'MuniAI' | 'Google' | 'DeepMind' | 'GroqCloud';
   badge: string;
   description: string;
-  speed: 'Fast' | 'Ultra' | 'Reasoning';
+  speed: 'Fast' | 'Ultra' | 'Reasoning' | 'Ultra-Fast' | 'Instant';
   contextLength: string;
   isPro?: boolean;
 }
@@ -122,6 +122,7 @@ export interface AppSettings {
   enableSoundEffects: boolean;
   enableAutoReadAloud: boolean;
   defaultModel: string;
+  groqApiKey?: string;
   systemPrompt: string;
   temperature: number;
   topP: number;

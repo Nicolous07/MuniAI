@@ -2,6 +2,7 @@ import express from "express";
 import path from "path";
 import dotenv from "dotenv";
 import { GoogleGenAI, ThinkingLevel } from "@google/genai";
+import Groq from "groq-sdk";
 import { createServer as createViteServer } from "vite";
 import { MUNIAI_SYSTEM_PROMPT_V2 } from "./src/data/systemPrompt";
 
@@ -28,15 +29,46 @@ const getGenAIClient = () => {
   });
 };
 
+// Initialize Groq Client
+const getGroqClient = (customKey?: string) => {
+  const apiKey = customKey || process.env.GROQ_API_KEY;
+  if (!apiKey || apiKey.trim() === "") {
+    return null;
+  }
+  return new Groq({ apiKey: apiKey.trim() });
+};
+
 // Healthcheck endpoint
 app.get("/api/health", (_req, res) => {
   res.json({ status: "online", platform: "MuniAI Enterprise", timestamp: new Date().toISOString() });
 });
 
-// Chat completion endpoint (with streaming SSE support)
+// Verify Groq API Key endpoint
+app.post("/api/verify-groq", async (req, res) => {
+  try {
+    const { apiKey } = req.body;
+    const groq = getGroqClient(apiKey);
+    if (!groq) {
+      return res.status(400).json({ success: false, error: "No Groq API key provided." });
+    }
+    const modelsList = await groq.models.list();
+    return res.json({ success: true, count: modelsList.data?.length || 0 });
+  } catch (err: any) {
+    return res.status(401).json({ success: false, error: err?.message || "Invalid Groq API Key." });
+  }
+});
+
+// Chat completion endpoint (with streaming SSE support for GroqCloud & Gemini)
 app.post("/api/chat", async (req, res) => {
   try {
-    const { messages, model = "gemini-3.6-flash", enableSearch = false, deepThink = false, systemInstruction } = req.body;
+    const {
+      messages,
+      model = "llama-3.3-70b-versatile",
+      enableSearch = false,
+      deepThink = false,
+      systemInstruction,
+      groqApiKey,
+    } = req.body;
 
     if (!messages || !Array.isArray(messages)) {
       return res.status(400).json({ error: "Invalid messages payload" });
@@ -52,85 +84,135 @@ app.post("/api/chat", async (req, res) => {
 
     let streamSuccess = false;
 
-    try {
-      const ai = getGenAIClient();
+    const isGroqModel =
+      model.startsWith("llama-") ||
+      model.startsWith("deepseek-") ||
+      model.startsWith("mixtral-") ||
+      model.startsWith("gemma-") ||
+      model.includes("groq");
 
-      // Transform messages to Gemini contents format
-      const contents = messages.map((m: { role: string; content: string; imageBase64?: string }) => {
-        const parts: any[] = [];
-        if (m.imageBase64) {
-          const matches = m.imageBase64.match(/^data:(.+);base64,(.+)$/);
-          if (matches) {
-            parts.push({
-              inlineData: {
-                mimeType: matches[1],
-                data: matches[2],
-              },
-            });
-          }
-        }
-        if (m.content) {
-          parts.push({ text: m.content });
-        }
-        return {
-          role: m.role === "user" ? "user" : "model",
-          parts: parts.length > 0 ? parts : [{ text: m.content || "" }],
-        };
-      });
+    // 1. Try GroqCloud API if Groq model selected OR Groq API Key available
+    const groq = getGroqClient(groqApiKey);
+    if (groq && (isGroqModel || !!groqApiKey || !!process.env.GROQ_API_KEY)) {
+      try {
+        const groqModelName = isGroqModel ? model : "llama-3.3-70b-versatile";
 
-      const config: any = {};
-
-      if (systemInstruction) {
-        config.systemInstruction = systemInstruction;
-      } else {
-        config.systemInstruction = MUNIAI_SYSTEM_PROMPT_V2;
-      }
-
-      if (enableSearch) {
-        config.tools = [{ googleSearch: {} }];
-      }
-
-      if (deepThink) {
-        config.thinkingConfig = { thinkingLevel: ThinkingLevel.HIGH };
-      }
-
-      // Try list of model candidates in sequence if permission or alias issues occur
-      const modelCandidates = [
-        model,
-        "gemini-3.6-flash",
-        "gemini-3.1-pro-preview",
-        "gemini-flash-latest",
-      ].filter((m, i, arr) => m && arr.indexOf(m) === i);
-
-      for (const modelToTry of modelCandidates) {
-        try {
-          const responseStream = await ai.models.generateContentStream({
-            model: modelToTry,
-            contents,
-            config,
+        const groqMessages: any[] = [];
+        const sysPrompt = systemInstruction || MUNIAI_SYSTEM_PROMPT_V2;
+        if (sysPrompt) {
+          groqMessages.push({
+            role: "system",
+            content: sysPrompt,
           });
+        }
 
-          for await (const chunk of responseStream) {
-            const text = chunk.text || "";
-            const groundingChunks = chunk.candidates?.[0]?.groundingMetadata?.groundingChunks;
-            
-            const payload = JSON.stringify({
-              text,
-              grounding: groundingChunks || null,
+        for (const m of messages) {
+          groqMessages.push({
+            role: m.role === "user" ? "user" : "assistant",
+            content: m.content || "",
+          });
+        }
+
+        const chatCompletion = await groq.chat.completions.create({
+          messages: groqMessages,
+          model: groqModelName,
+          temperature: 0.7,
+          stream: true,
+        });
+
+        for await (const chunk of chatCompletion) {
+          const deltaText = chunk.choices[0]?.delta?.content || "";
+          if (deltaText) {
+            res.write(`data: ${JSON.stringify({ text: deltaText, grounding: null })}\n\n`);
+          }
+        }
+
+        streamSuccess = true;
+      } catch (groqErr: any) {
+        console.warn("Groq API stream failed, attempting Gemini fallback:", groqErr?.message || groqErr);
+      }
+    }
+
+    // 2. Try Gemini API if Groq wasn't used or failed
+    if (!streamSuccess) {
+      try {
+        const ai = getGenAIClient();
+
+        // Transform messages to Gemini contents format
+        const contents = messages.map((m: { role: string; content: string; imageBase64?: string }) => {
+          const parts: any[] = [];
+          if (m.imageBase64) {
+            const matches = m.imageBase64.match(/^data:(.+);base64,(.+)$/);
+            if (matches) {
+              parts.push({
+                inlineData: {
+                  mimeType: matches[1],
+                  data: matches[2],
+                },
+              });
+            }
+          }
+          if (m.content) {
+            parts.push({ text: m.content });
+          }
+          return {
+            role: m.role === "user" ? "user" : "model",
+            parts: parts.length > 0 ? parts : [{ text: m.content || "" }],
+          };
+        });
+
+        const config: any = {};
+
+        if (systemInstruction) {
+          config.systemInstruction = systemInstruction;
+        } else {
+          config.systemInstruction = MUNIAI_SYSTEM_PROMPT_V2;
+        }
+
+        if (enableSearch) {
+          config.tools = [{ googleSearch: {} }];
+        }
+
+        if (deepThink) {
+          config.thinkingConfig = { thinkingLevel: ThinkingLevel.HIGH };
+        }
+
+        const modelCandidates = [
+          isGroqModel ? "gemini-3.6-flash" : model,
+          "gemini-3.6-flash",
+          "gemini-3.1-pro-preview",
+          "gemini-flash-latest",
+        ].filter((m, i, arr) => m && arr.indexOf(m) === i);
+
+        for (const modelToTry of modelCandidates) {
+          try {
+            const responseStream = await ai.models.generateContentStream({
+              model: modelToTry,
+              contents,
+              config,
             });
 
-            res.write(`data: ${payload}\n\n`);
-          }
+            for await (const chunk of responseStream) {
+              const text = chunk.text || "";
+              const groundingChunks = chunk.candidates?.[0]?.groundingMetadata?.groundingChunks;
 
-          streamSuccess = true;
-          break; // successfully completed stream
-        } catch (mErr: any) {
-          console.warn(`Attempt with model ${modelToTry} failed:`, mErr?.message || mErr);
-          // continue to next model candidate
+              const payload = JSON.stringify({
+                text,
+                grounding: groundingChunks || null,
+              });
+
+              res.write(`data: ${payload}\n\n`);
+            }
+
+            streamSuccess = true;
+            break;
+          } catch (mErr: any) {
+            console.warn(`Attempt with Gemini model ${modelToTry} failed:`, mErr?.message || mErr);
+          }
         }
+      } catch (genAiInitErr: any) {
+        console.warn("GenAI Client init warning:", genAiInitErr?.message);
       }
-    } catch (genAiInitErr: any) {
-      console.warn("GenAI Client init warning:", genAiInitErr?.message);
     }
 
     // If API stream was denied or unavailable, stream synthesized MuniAI response smoothly
@@ -256,9 +338,40 @@ app.post("/api/generate-image", async (req, res) => {
 // Deep Research multi-step report planner endpoint
 app.post("/api/research", async (req, res) => {
   try {
-    const { topic } = req.body;
+    const { topic, groqApiKey } = req.body;
     if (!topic) {
       return res.status(400).json({ error: "Topic is required" });
+    }
+
+    // Try Groq research synthesis if key available
+    const groq = getGroqClient(groqApiKey);
+    if (groq) {
+      try {
+        const groqResponse = await groq.chat.completions.create({
+          model: "deepseek-r1-distill-llama-70b",
+          messages: [
+            { role: "system", content: MUNIAI_SYSTEM_PROMPT_V2 },
+            {
+              role: "user",
+              content: `Perform an in-depth, rigorous multi-perspective research synthesis on: "${topic}".\nProvide a structured executive briefing in markdown with:\n1. Executive Summary & Core Insights\n2. Key Methodology & Analytical Vectors\n3. Comprehensive Analysis & Empirical Findings\n4. Technological & Strategic Implications\n5. Future Horizon & Actionable Recommendations\n\nInclude clear section headers, bulleted lists, and detailed breakdown.`,
+            },
+          ],
+          temperature: 0.6,
+        });
+
+        const reportText = groqResponse.choices[0]?.message?.content;
+        if (reportText) {
+          return res.json({
+            topic,
+            report: reportText,
+            sources: [
+              { web: { title: "GroqCloud DeepSeek R1 Distill LPU Synthesis", uri: "https://groq.com" } },
+            ],
+          });
+        }
+      } catch (groqResErr: any) {
+        console.warn("Groq research synthesis warning:", groqResErr?.message || groqResErr);
+      }
     }
 
     try {
