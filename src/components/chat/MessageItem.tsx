@@ -71,7 +71,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, onRegenerate,
       <div className="shrink-0">
         {isAssistant ? (
           <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-md shadow-cyan-500/20 text-white overflow-hidden">
-            <img src="/logo.jpg" alt="MuniCryptrix AI" className="h-full w-full object-cover rounded-[7px]" />
+            <img src="/logo.jpg" alt="MuniAI" className="h-full w-full object-cover rounded-[7px]" />
             <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-[#050505]" />
           </div>
         ) : (
@@ -87,7 +87,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, onRegenerate,
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-sm text-slate-100">
-              {isAssistant ? 'MuniCryptrix AI' : 'You'}
+              {isAssistant ? 'MuniAI Omega' : 'You'}
             </span>
             {isAssistant && message.modelUsed && (
               <span className="rounded-md bg-white/5 px-2 py-0.5 font-mono text-[10px] text-cyan-300 border border-white/10">

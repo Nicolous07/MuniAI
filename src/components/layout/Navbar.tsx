@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20 overflow-hidden">
           <img
             src="/logo.jpg"
-            alt="MuniCryptrix AI"
+            alt="MuniAI"
             className="h-full w-full object-cover rounded-[11px]"
             onError={(e) => {
               (e.target as HTMLElement).style.display = 'none';
@@ -56,7 +56,7 @@ export const Navbar: React.FC<NavbarProps> = ({
         </div>
         <div className="hidden sm:block">
           <span className="text-lg font-black tracking-tight text-gradient-primary">
-            MuniCryptrix AI
+            MuniAI
           </span>
           <span className="ml-2 px-2.5 py-1 bg-white/5 rounded-full border border-white/10 text-[10px] font-mono font-bold text-slate-300 uppercase tracking-wider inline-flex items-center gap-1.5">
             <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />

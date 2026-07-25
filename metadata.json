@@ -1,5 +1,5 @@
 {
-  "name": "MuniCryptrix AI",
+  "name": "MuniAI",
   "description": "Ultra-luxury enterprise AI platform powered by Gemini with deep research, reasoning timelines, code mode, voice interaction, and multimodal generation.",
   "requestFramePermissions": ["microphone"],
   "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]

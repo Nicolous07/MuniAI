@@ -177,16 +177,16 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {/* Header Brand */}
           <div className="text-center mb-6">
             <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20 mb-3 overflow-hidden">
-              <img src="/logo.jpg" alt="MuniCryptrix AI" className="h-full w-full object-cover rounded-[15px]" />
+              <img src="/logo.jpg" alt="MuniAI" className="h-full w-full object-cover rounded-[15px]" />
             </div>
             <h2 className="text-2xl font-black text-white tracking-tight">
-              {tab === 'login' && 'Welcome Back to MuniCryptrix'}
-              {tab === 'signup' && 'Join MuniCryptrix AI'}
+              {tab === 'login' && 'Welcome Back'}
+              {tab === 'signup' && 'Create Your Account'}
               {tab === 'forgot' && 'Reset Password'}
             </h2>
             <p className="text-xs text-slate-400 mt-1">
-              {tab === 'login' && 'Sign in to access MuniCryptrix AI neural models'}
-              {tab === 'signup' && 'Start building with MuniCryptrix AI Enterprise Studio'}
+              {tab === 'login' && 'Sign in to access MuniAI Omega neural models'}
+              {tab === 'signup' && 'Start building with MuniAI Enterprise Studio'}
               {tab === 'forgot' && 'Enter your email to receive recovery instructions'}
             </p>
           </div>
