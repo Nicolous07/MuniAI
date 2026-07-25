@@ -44,18 +44,23 @@ export const Navbar: React.FC<NavbarProps> = ({
     <header className="sticky top-0 z-20 flex h-16 w-full items-center justify-between border-b border-white/5 glass-panel bg-[#050505]/60 backdrop-blur-md px-4 md:px-6 shrink-0">
       {/* Left Brand Identity */}
       <div className="flex items-center gap-3">
-        <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20">
-          <div className="flex h-full w-full items-center justify-center rounded-[7px] bg-[#050505]">
-            <Sparkles className="h-4 w-4 text-cyan-400" />
-          </div>
+        <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20 overflow-hidden">
+          <img
+            src="/logo.jpg"
+            alt="MuniCryptrix AI"
+            className="h-full w-full object-cover rounded-[11px]"
+            onError={(e) => {
+              (e.target as HTMLElement).style.display = 'none';
+            }}
+          />
         </div>
         <div className="hidden sm:block">
           <span className="text-lg font-black tracking-tight text-gradient-primary">
-            MuniAI
+            MuniCryptrix AI
           </span>
           <span className="ml-2 px-2.5 py-1 bg-white/5 rounded-full border border-white/10 text-[10px] font-mono font-bold text-slate-300 uppercase tracking-wider inline-flex items-center gap-1.5">
-            <span className="w-1.5 h-1.5 bg-purple-500 rounded-full" />
-            Omega 10.0 Ultra
+            <span className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" />
+            Omega Ultra
           </span>
         </div>
       </div>

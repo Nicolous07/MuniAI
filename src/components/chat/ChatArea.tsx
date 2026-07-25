@@ -43,9 +43,9 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
-              className="relative mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-purple-600 shadow-2xl shadow-cyan-500/30 text-white"
+              className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[2px] shadow-2xl shadow-cyan-500/30 overflow-hidden"
             >
-              <Sparkles className="h-8 w-8" />
+              <img src="/logo.jpg" alt="MuniCryptrix AI" className="h-full w-full object-cover rounded-[22px]" />
             </motion.div>
 
             <motion.h1
@@ -54,7 +54,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               transition={{ duration: 0.6, delay: 0.1 }}
               className="text-4xl md:text-6xl font-extrabold tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white via-slate-200 to-cyan-400 mb-3"
             >
-              MuniAI Omega
+              MuniCryptrix AI
             </motion.h1>
 
             <motion.p

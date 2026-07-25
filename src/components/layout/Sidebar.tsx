@@ -94,8 +94,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
               className="flex w-full items-center justify-between rounded-2xl glass-pill px-3 py-2 text-left hover:border-cyan-500/40"
             >
               <div className="flex items-center gap-2.5">
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 text-white shadow-md shadow-cyan-500/20">
-                  <Crown className="h-4 w-4" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] text-white shadow-md shadow-cyan-500/20 overflow-hidden">
+                  <img src="/logo.jpg" alt="Logo" className="h-full w-full object-cover rounded-[7px]" />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">
@@ -133,8 +133,8 @@ export const Sidebar: React.FC<SidebarProps> = ({
           </div>
         ) : (
           <div className="flex justify-center">
-            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-purple-600 text-white shadow-lg shadow-cyan-500/20">
-              <Crown className="h-5 w-5" />
+            <div className="flex h-9 w-9 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] text-white shadow-lg shadow-cyan-500/20 overflow-hidden">
+              <img src="/logo.jpg" alt="Logo" className="h-full w-full object-cover rounded-[15px]" />
             </div>
           </div>
         )}
