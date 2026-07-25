@@ -71,7 +71,7 @@ export const MessageItem: React.FC<MessageItemProps> = ({ message, onRegenerate,
       <div className="shrink-0">
         {isAssistant ? (
           <div className="relative flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-md shadow-cyan-500/20 text-white overflow-hidden">
-            <img src="/logo.jpg" alt="MuniAI" className="h-full w-full object-cover rounded-[7px]" />
+            <img src="/logo.png" alt="MuniAI" className="h-full w-full object-cover rounded-[7px]" />
             <div className="absolute -bottom-0.5 -right-0.5 h-2.5 w-2.5 rounded-full bg-emerald-500 border-2 border-[#050505]" />
           </div>
         ) : (

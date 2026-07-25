@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" width="128" height="128">
+  <defs>
+    <!-- Background Gradient -->
+    <radialGradient id="bgGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#0f172a"/>
+      <stop offset="100%" stop-color="#030712"/>
+    </radialGradient>
+    
+    <!-- Gemini Star Main Gradient -->
+    <linearGradient id="geminiGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#38bdf8"/>
+      <stop offset="35%" stop-color="#60a5fa"/>
+      <stop offset="70%" stop-color="#818cf8"/>
+      <stop offset="100%" stop-color="#c084fc"/>
+    </linearGradient>
+
+    <!-- Inner Core Glow Gradient -->
+    <radialGradient id="coreGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#38bdf8" stop-opacity="0.9"/>
+      <stop offset="50%" stop-color="#818cf8" stop-opacity="0.4"/>
+      <stop offset="100%" stop-color="#a855f7" stop-opacity="0"/>
+    </radialGradient>
+
+    <!-- Soft Ambient Glow behind the star -->
+    <radialGradient id="ambientGlow" cx="50%" cy="50%" r="60%">
+      <stop offset="0%" stop-color="#00d8ff" stop-opacity="0.6"/>
+      <stop offset="40%" stop-color="#7c3aed" stop-opacity="0.3"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Dark Rounded Container -->
+  <rect x="4" y="4" width="120" height="120" rx="32" fill="url(#bgGlow)" stroke="#1e293b" stroke-width="2"/>
+
+  <!-- Ambient Light Halo -->
+  <circle cx="64" cy="64" r="50" fill="url(#ambientGlow)"/>
+
+  <!-- Core Light Burst -->
+  <circle cx="64" cy="64" r="30" fill="url(#coreGlow)"/>
+
+  <!-- Gemini 4-Pointed Sparkle Star Path -->
+  <path d="M 64 12 C 64 42, 86 64, 116 64 C 86 64, 64 86, 64 116 C 64 86, 42 64, 12 64 C 42 64, 64 42, 64 12 Z" fill="url(#geminiGrad)"/>
+
+  <!-- Secondary Bright Center Accent Sparkle -->
+  <path d="M 64 36 C 64 51, 77 64, 92 64 C 77 64, 64 77, 64 92 C 64 77, 51 64, 36 64 C 51 64, 64 51, 64 36 Z" fill="#ffffff" opacity="0.85"/>
+</svg>

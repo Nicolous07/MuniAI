@@ -177,7 +177,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({
           {/* Header Brand */}
           <div className="text-center mb-6">
             <div className="inline-flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20 mb-3 overflow-hidden">
-              <img src="/logo.jpg" alt="MuniAI" className="h-full w-full object-cover rounded-[15px]" />
+              <img src="/logo.png" alt="MuniAI" className="h-full w-full object-cover rounded-[15px]" />
             </div>
             <h2 className="text-2xl font-black text-white tracking-tight">
               {tab === 'login' && 'Welcome Back'}

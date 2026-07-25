@@ -45,7 +45,7 @@ export const ChatArea: React.FC<ChatAreaProps> = ({
               transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
               className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-3xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[2px] shadow-2xl shadow-cyan-500/30 overflow-hidden"
             >
-              <img src="/logo.jpg" alt="MuniAI" className="h-full w-full object-cover rounded-[22px]" />
+              <img src="/logo.png" alt="MuniAI" className="h-full w-full object-cover rounded-[22px]" />
             </motion.div>
 
             <motion.h1

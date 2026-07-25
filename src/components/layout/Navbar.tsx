@@ -46,11 +46,11 @@ export const Navbar: React.FC<NavbarProps> = ({
       <div className="flex items-center gap-3">
         <div className="relative flex h-9 w-9 items-center justify-center rounded-xl bg-gradient-to-br from-cyan-400 to-purple-600 p-[1px] shadow-lg shadow-cyan-500/20 overflow-hidden">
           <img
-            src="/logo.jpg"
+            src="/logo.png"
             alt="MuniAI"
             className="h-full w-full object-cover rounded-[11px]"
             onError={(e) => {
-              (e.target as HTMLElement).style.display = 'none';
+              (e.target as HTMLImageElement).src = '/favicon.svg';
             }}
           />
         </div>
